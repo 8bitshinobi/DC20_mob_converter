@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D&D 5e to DC20 Converter</title>
+    <!-- Link to the CSS file -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="container">
+    <h1>🐉 D&D 5e to DC20 Converter</h1>
+    
+    <div class="tabs">
+        <div class="tab active" onclick="switchTab('converter')">Converter</div>
+        <div class="tab" onclick="switchTab('library')">Library</div>
+        <div class="tab" onclick="switchTab('abilities')">Abilities</div>
+        <div class="tab" onclick="switchTab('settings')">⚙️ Settings</div>
+        <div class="tab" onclick="switchTab('search')">🔍 Search</div>
+    </div>
+
+    <!-- CONVERTER TAB -->
+    <div id="converter" class="tab-content active">
+        <div class="grid">
+            <div>
+                <h3>Enter 5e Monster Stats</h3>
+                <form id="monsterForm">
+                    <div class="form-group"><label for="mName">Monster Name</label><input type="text" id="mName" placeholder="e.g., Goblin" required></div>
+                    <div class="form-group">
+                        <label for="mCR">Challenge Rating (CR)</label>
+                        <select id="mCR" required>
+                            <option value="0">CR 0</option><option value="0.125">CR 1/8</option><option value="0.25">CR 1/4</option>
+                            <option value="0.5">CR 1/2</option><option value="1">CR 1</option><option value="2">CR 2</option>
+                            <option value="3">CR 3</option><option value="4">CR 4</option><option value="5">CR 5</option>
+                            <option value="6">CR 6</option><option value="7">CR 7</option><option value="8">CR 8</option>
+                            <option value="9">CR 9</option><option value="10">CR 10</option><option value="11">CR 11</option>
+                            <option value="12">CR 12</option><option value="13">CR 13</option><option value="14">CR 14</option>
+                            <option value="15">CR 15</option><option value="16">CR 16</option><option value="17">CR 17</option>
+                            <option value="18">CR 18</option><option value="19">CR 19</option><option value="20">CR 20</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label for="mHP">Hit Points (HP)</label><input type="number" id="mHP" required></div>
+                    <div class="form-group"><label for="mAC">Armor Class (AC)</label><input type="number" id="mAC" required></div>
+                    <div class="form-group"><label for="mSTR">Strength (STR)</label><input type="number" id="mSTR" required></div>
+                    <div class="form-group"><label for="mDEX">Dexterity (DEX)</label><input type="number" id="mDEX" required></div>
+                    <div class="form-group"><label for="mCON">Constitution (CON)</label><input type="number" id="mCON" required></div>
+                    <div class="form-group"><label for="mINT">Intelligence (INT)</label><input type="number" id="mINT" required></div>
+                    <div class="form-group"><label for="mWIS">Wisdom (WIS)</label><input type="number" id="mWIS" required></div>
+                    <div class="form-group"><label for="mCHA">Charisma (CHA)</label><input type="number" id="mCHA" required></div>
+                    <div class="form-group">
+                        <label for="mAbilities">Special Abilities (5e Description)</label>
+                        <textarea id="mAbilities" placeholder="e.g., Pack Tactics: The goblin has advantage..." oninput="showAbilitySuggestions()"></textarea>
+                        <div id="abilitySuggestions" class="ability-suggestions" style="display:none;"></div>
+                    </div>
+                    <button type="button" onclick="convertMonster()">Convert to DC20</button>
+                </form>
+            </div>
+
+            <div>
+                <h3>DC20 Result</h3>
+                <div id="resultArea" class="result-box">
+                    <h4 id="resName"></h4>
+                    <p><strong>Level:</strong> <span id="resLevel"></span> | <strong>Type:</strong> <span id="resType"></span></p>
+                    <div class="stat-grid">
+                        <div class="stat-item"><div class="stat-label">HP</div><div class="stat-value" id="resHP"></div></div>
+                        <div class="stat-item"><div class="stat-label">PD</div><div class="stat-value" id="resPD"></div></div>
+                        <div class="stat-item"><div class="stat-label">AD</div><div class="stat-value" id="resAD"></div></div>
+                        <div class="stat-item"><div class="stat-label">Attack</div><div class="stat-value" id="resAttack"></div></div>
+                        <div class="stat-item"><div class="stat-label">Damage</div><div class="stat-value" id="resDamage"></div></div>
+                        <div class="stat-item"><div class="stat-label">Save DC</div><div class="stat-value" id="resSaveDC"></div></div>
+                        <div class="stat-item"><div class="stat-label">Speed</div><div class="stat-value" id="resSpeed"></div></div>
+                        <div class="stat-item"><div class="stat-label">Might</div><div class="stat-value" id="resMight"></div></div>
+                        <div class="stat-item"><div class="stat-label">Agility</div><div class="stat-value" id="resAgility"></div></div>
+                        <div class="stat-item"><div class="stat-label">Intelligence</div><div class="stat-value" id="resIntelligence"></div></div>
+                        <div class="stat-item"><div class="stat-label">Charisma</div><div class="stat-value" id="resCharisma"></div></div>
+                        <div class="stat-item"><div class="stat-label">Prime</div><div class="stat-value" id="resPrime"></div></div>
+                        <div class="stat-item"><div class="stat-label">CM</div><div class="stat-value" id="resCM"></div></div>
+                        <div class="stat-item"><div class="stat-label">Total Feature Power</div><div class="stat-value" id="resTotalFeaturePower"></div></div>
+                    </div>
+                    <div class="form-group" style="margin-top: 20px;">
+                        <label for="difficultySelect">Adjust Difficulty Type</label>
+                        <select id="difficultySelect" onchange="applyDifficultyModifier()">
+                            <option value="Medium">Medium (Standard)</option>
+                            <option value="Minion">Minion</option>
+                            <option value="Easy">Easy</option>
+                            <option value="Hard">Hard</option>
+                            <option value="Boss">Boss</option>
+                            <option value="Solo">Solo</option>
+                        </select>
+                    </div>
+                    <div id="finalAbilities" class="ability-list"></div>
+                    <div style="margin-top: 20px;">
+                        <button onclick="saveMonster()">💾 Save to Library</button>
+                        <button onclick="copyStats()" class="secondary">📋 Copy Stats</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+   
+    <!-- SEARCH TAB -->
+<div id="search" class="tab-content">
+  <h3>🔍 Monster Search</h3>
+  
+  <div class="search-filters" style="margin-bottom: 20px;">
+    <div class="grid" style="gap: 15px;">
+      <div class="form-group">
+        <label for="searchName">Name</label>
+        <input type="text" id="searchName" placeholder="e.g., Goblin">
+      </div>
+      
+      <div class="form-group">
+        <label for="searchLevel">Level</label>
+        <select id="searchLevel">
+          <option value="">Any Level</option>
+          <option value="Novice">Novice</option>
+          <option value="Level 1">Level 1</option>
+          <option value="Level 2">Level 2</option>
+          <option value="Level 3">Level 3</option>
+          <option value="Level 4">Level 4</option>
+          <option value="Level 5">Level 5</option>
+          <option value="Level 6">Level 6</option>
+          <option value="Level 7">Level 7</option>
+          <option value="Level 8">Level 8</option>
+          <option value="Level 9">Level 9</option>
+          <option value="Level 10">Level 10</option>
+          <option value="Level 11">Level 11</option>
+          <option value="Level 12">Level 12</option>
+          <option value="Level 13">Level 13</option>
+          <option value="Level 14">Level 14</option>
+          <option value="Level 15">Level 15</option>
+          <option value="Level 16">Level 16</option>
+          <option value="Level 17">Level 17</option>
+          <option value="Level 18">Level 18</option>
+          <option value="Level 19">Level 19</option>
+          <option value="Level 20">Level 20</option>
+          <option value="Level 21">Level 21</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="searchDifficulty">Difficulty</label>
+        <select id="searchDifficulty">
+          <option value="">Any Difficulty</option>
+          <option value="Easy">Easy</option>
+          <option value="Medium">Medium</option>
+          <option value="Hard">Hard</option>
+          <option value="Minion">Minion</option>
+          <option value="Boss">Boss</option>
+          <option value="Solo">Solo</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="searchMight">Might (min)</label>
+        <input type="number" id="searchMight" placeholder="e.g., 3">
+      </div>
+      
+      <div class="form-group">
+        <label for="searchAgility">Agility (min)</label>
+        <input type="number" id="searchAgility" placeholder="e.g., 2">
+      </div>
+      
+      <div class="form-group">
+        <label for="searchHP">HP (min)</label>
+        <input type="number" id="searchHP" placeholder="e.g., 10">
+      </div>
+    </div>
+    
+    <div style="margin-top: 15px;">
+      <button onclick="performSearch()">🔍 Search</button>
+      <button onclick="clearSearch()" class="secondary">🔄 Clear Filters</button>
+      <span id="searchResultsCount" style="margin-left: 15px; color: #666;"></span>
+    </div>
+  </div>
+  
+  <div id="searchResults" style="display: none;">
+    <div style="margin-bottom: 15px;">
+      <button onclick="printAllResults()" class="secondary">🖨️ Print All Cards</button>
+    </div>
+    <div id="resultsGrid" class="results-grid"></div>
+  </div>
+</div>
+  
+    <!-- LIBRARY TAB -->
+   <div id="library" class="tab-content">
+  <h3>Saved Monsters</h3>
+  <p>Your saved monsters are stored in your browser. Click one to load it.</p>
+
+
+  <!-- Existing Export/Import buttons -->
+  <div style="margin-bottom: 15px;">
+    <button onclick="exportLibrary()">📥 Export Library</button>
+    <button onclick="document.getElementById('importFile').click()" class="secondary">📤 Import Library</button>
+    <input type="file" id="importFile" accept=".json" style="display:none;" onchange="importLibrary(this)">
+  </div>
+  
+   <!-- NEW: DC20 Monster Toggle Button -->
+  <div style="margin-top: 30px; padding-top: 20px; border-top: 2px solid #ddd; text-align: center;">
+    <button type="button" onclick="toggleDC20Form()" class="secondary">➕ Add DC20 Monster (Form)</button>
+  </div>
+
+  <!-- Hidden Form Container -->
+  <div id="dc20FormContainer">
+    <h4>➕ Add DC20 Monster (Form)</h4>
+    <p><small>Fill out the form below to add a pre-made DC20 monster to your library.</small></p>
+    
+    <form id="dc20MonsterForm" onsubmit="event.preventDefault(); submitDC20Monster();">
+      <!-- ... (Keep all your existing form fields here) ... -->
+      <div class="grid" style="gap: 15px;">
+        <div class="form-group">
+          <label for="formName">Monster Name *</label>
+          <input type="text" id="formName" required placeholder="e.g., Orc Warrior">
+        </div>
+        
+        <div class="form-group">
+          <label for="formLevel">Level *</label>
+          <select id="formLevel" required>
+            <option value="">Select Level</option>
+            <option value="Novice">Novice</option>
+            <option value="Level 1">Level 1</option>
+            <option value="Level 2">Level 2</option>
+            <option value="Level 3">Level 3</option>
+            <option value="Level 4">Level 4</option>
+            <option value="Level 5">Level 5</option>
+            <option value="Level 6">Level 6</option>
+            <option value="Level 7">Level 7</option>
+            <option value="Level 8">Level 8</option>
+            <option value="Level 9">Level 9</option>
+            <option value="Level 10">Level 10</option>
+            <option value="Level 11">Level 11</option>
+            <option value="Level 12">Level 12</option>
+            <option value="Level 13">Level 13</option>
+            <option value="Level 14">Level 14</option>
+            <option value="Level 15">Level 15</option>
+            <option value="Level 16">Level 16</option>
+            <option value="Level 17">Level 17</option>
+            <option value="Level 18">Level 18</option>
+            <option value="Level 19">Level 19</option>
+            <option value="Level 20">Level 20</option>
+            <option value="Level 21">Level 21</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="formDifficulty">Difficulty *</label>
+          <select id="formDifficulty" required>
+            <option value="">Select Difficulty</option>
+            <option value="Easy">Easy</option>
+            <option value="Medium">Medium</option>
+            <option value="Hard">Hard</option>
+            <option value="Minion">Minion</option>
+            <option value="Boss">Boss</option>
+            <option value="Solo">Solo</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="formCR">CR (Optional)</label>
+          <input type="text" id="formCR" placeholder="e.g., 3 or N/A">
+        </div>
+        
+        <!-- Combat Stats -->
+        <div class="form-group">
+          <label for="formHP">HP *</label>
+          <input type="number" id="formHP" required min="1">
+        </div>
+        
+        <div class="form-group">
+          <label for="formPD">PD *</label>
+          <input type="number" id="formPD" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="formAD">AD *</label>
+          <input type="number" id="formAD" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="formAttack">Attack *</label>
+          <input type="number" id="formAttack" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="formDamage">Damage *</label>
+          <input type="number" id="formDamage" required step="0.5">
+        </div>
+        
+        <div class="form-group">
+          <label for="formSaveDC">Save DC *</label>
+          <input type="number" id="formSaveDC" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="formSpeed">Speed *</label>
+          <input type="number" id="formSpeed" required>
+        </div>
+        
+        <!-- Attributes -->
+        <div class="form-group">
+          <label for="formMight">Might *</label>
+          <input type="number" id="formMight" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="formAgility">Agility *</label>
+          <input type="number" id="formAgility" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="formIntelligence">Intelligence *</label>
+          <input type="number" id="formIntelligence" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="formCharisma">Charisma *</label>
+          <input type="number" id="formCharisma" required>
+        </div>
+        
+        <!-- Optional Features -->
+        <div class="form-group">
+          <label for="formPrime">Prime</label>
+          <input type="number" id="formPrime" value="0">
+        </div>
+        
+        <div class="form-group">
+          <label for="formCM">CM</label>
+          <input type="number" id="formCM" value="0">
+        </div>
+        
+        <div class="form-group">
+          <label for="formTotalFeaturePower">Total Feature Power</label>
+          <input type="number" id="formTotalFeaturePower" value="0">
+        </div>
+      </div>
+      
+      <div style="margin-top: 20px;">
+        <button type="submit">➕ Add Monster to Library</button>
+        <button type="button" onclick="resetDC20Form()" class="secondary">🔄 Clear Form</button>
+      </div>
+    </form>
+    
+    <div id="ingestStatus" style="margin-top: 10px; padding: 10px; border-radius: 4px; display:none;"></div>
+  </div>
+  
+  <ul id="savedList" class="saved-list"></ul>
+</div>
+
+    <!-- ABILITIES TAB -->
+    <div id="abilities" class="tab-content">
+        <h3>Ability Reference Library</h3>
+        <p>Store your hand-converted abilities here for quick reuse.</p>
+        <div class="form-group"><label for="ab5eName">5e Ability Name</label><input type="text" id="ab5eName" placeholder="e.g., Pack Tactics"></div>
+        <div class="form-group"><label for="ab5eDesc">5e Description (Optional)</label><textarea id="ab5eDesc" placeholder="Original description..."></textarea></div>
+        <div class="form-group"><label for="abDC20">DC20 Conversion</label><textarea id="abDC20" placeholder="Converted DC20 ability text..." required></textarea></div>
+        <button onclick="saveAbility()">Save Ability</button>
+        <h4>Reference List</h4>
+        <table class="reference-table">
+            <thead><tr><th>5e Name</th><th>DC20 Conversion</th><th>Action</th></tr></thead>
+            <tbody id="abilityTableBody"></tbody>
+        </table>
+    </div>
+
+    <!-- SETTINGS TAB -->
+    <div id="settings" class="tab-content">
+        <h3>Conversion Settings</h3>
+        <p>Edit the BASE_STATS and MODIFIERS tables below. Changes are saved automatically to your browser.</p>
+        <div style="margin-bottom: 20px;">
+            <button onclick="resetBaseStats()" class="secondary">↺ Reset BASE_STATS to Defaults</button>
+            <button onclick="resetModifiers()" class="secondary">↺ Reset MODIFIERS to Defaults</button>
+        </div>
+        <h4>BASE_STATS (Per Level)</h4>
+        <p><small>These are the base values before difficulty modifiers are applied.</small></p>
+        <div id="baseStatsEditor"></div>
+        <h4 style="margin-top: 30px;">MODIFIERS (Per Level & Difficulty)</h4>
+        <p><small>These values are added to BASE_STATS based on difficulty selection.</small></p>
+        <div id="modifiersEditor"></div>
+    </div>
+</div>
+
+<!-- Link to the JavaScript file -->
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
