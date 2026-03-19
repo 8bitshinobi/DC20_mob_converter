@@ -1,11 +1,11 @@
 const CACHE_NAME = 'dc20-cache-v1';
 const FILES_TO_CACHE = [
-  '/',
-  '/index.html',
-  '/styles.css',
-  '/app.js',
-  '/data.js',
-  '/manifest.json'
+  '/DC20_mob_converter/',
+  '/DC20_mob_converter/index.html',
+  '/DC20_mob_converter/styles.css',
+  '/DC20_mob_converter/app.js',
+  '/DC20_mob_converter/data.js',
+  '/DC20_mob_converter/manifest.json'
 ];
 
 self.addEventListener('install', event => {
