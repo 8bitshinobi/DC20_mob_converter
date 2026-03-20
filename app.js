@@ -345,37 +345,38 @@ function applyDifficultyModifier() {
 // --- SAVE/LOAD/LIBRARY FUNCTIONS ---
 
 // Save Monster to Library
-function saveMonster() {
+async function saveMonster() {
   if (!currentMonster) {
     alert("Please convert a monster first.");
     return;
   }
 
   try {
-    const monsters = JSON.parse(localStorage.getItem("dc20_monsters") || "[]");
+    const { collection, query, where, getDocs, addDoc, updateDoc } = await import("https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js");
+    const monstersRef = collection(window.db, "monsters");
 
-    // Check for existing entry (case-insensitive name + exact CR)
-    const existingIndex = monsters.findIndex(m =>
-      m.name.toLowerCase().trim() === currentMonster.name.toLowerCase().trim() &&
-      m.cr == currentMonster.cr
+    // Check for existing entry
+    const q = query(monstersRef, 
+      where("name", "==", currentMonster.name.toLowerCase().trim()),
+      where("cr", "==", currentMonster.cr)
     );
+    const snapshot = await getDocs(q);
 
-    if (existingIndex >= 0) {
+    if (!snapshot.empty) {
       if (confirm(`"${currentMonster.name}" (CR ${currentMonster.cr}) exists. Update?`)) {
-        monsters[existingIndex] = currentMonster;
+        const docRef = snapshot.docs[0].ref;
+        await updateDoc(docRef, currentMonster);
         alert("Updated!");
       } else {
-        return; // User cancelled
+        return;
       }
     } else {
-      monsters.push(currentMonster);
+      await addDoc(monstersRef, currentMonster);
       alert("Saved!");
     }
 
-    localStorage.setItem("dc20_monsters", JSON.stringify(monsters));
     loadSavedMonsters();
     switchTab('library');
-    console.log("Saved. Total monsters:", monsters.length);
 
   } catch (e) {
     console.error("Save Error:", e);
@@ -384,30 +385,29 @@ function saveMonster() {
 }
 
 // Load Saved Monsters List
-function loadSavedMonsters() {
+async function loadSavedMonsters() {
   const list = document.getElementById("savedList");
-  list.innerHTML = "";
+  list.innerHTML = "<li>Loading...</li>";
 
   try {
-    const stored = localStorage.getItem("dc20_monsters");
-    if (!stored || stored === "[]") {
+    const { collection, getDocs } = await import("https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js");
+    const snapshot = await getDocs(collection(window.db, "monsters"));
+
+    if (snapshot.empty) {
       list.innerHTML = "<li>No monsters saved yet.</li>";
       return;
     }
 
-    const monsters = JSON.parse(stored);
-    if (monsters.length === 0) {
-      list.innerHTML = "<li>No monsters saved yet.</li>";
-      return;
-    }
-
-    monsters.forEach((m, i) => {
+    list.innerHTML = "";
+    snapshot.forEach(doc => {
+      const m = doc.data();
+      const id = doc.id;
       const li = document.createElement("li");
       li.className = "saved-item";
-      li.innerHTML = `<strong>${m.name}</strong> (${m.level}, ${m.difficulty})<button class="delete-btn" onclick="deleteMonster(${i})">Delete</button>`;
+      li.innerHTML = `<strong>${m.name}</strong> (${m.level}, ${m.difficulty})<button class="delete-btn" onclick="deleteMonster('${id}')">Delete</button>`;
       li.onclick = (e) => {
         if (e.target.className !== 'delete-btn') {
-          loadMonster(i);
+          loadMonster(m);
         }
       };
       list.appendChild(li);
@@ -420,10 +420,11 @@ function loadSavedMonsters() {
 }
 
 // Load Specific Monster
-function loadMonster(index) {
-  const monsters = JSON.parse(localStorage.getItem("dc20_monsters") || "[]");
-  const m = monsters[index];
+function loadMonster(m) {
   if (!m) return;
+
+  // rest of your existing loadMonster code stays exactly the same
+  // just remove the first two lines that read from localStorage
 
   // Fill Input Form
   document.getElementById("mName").value = m.name;
