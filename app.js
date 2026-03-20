@@ -352,7 +352,7 @@ async function saveMonster() {
   }
 
   try {
-    const { collection, query, where, getDocs, addDoc, updateDoc } = await import("https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js");
+    const { collection, query, where, getDocs, addDoc, updateDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
     const monstersRef = collection(window.db, "monsters");
 
     // Check for existing entry
@@ -390,7 +390,7 @@ async function loadSavedMonsters() {
   list.innerHTML = "<li>Loading...</li>";
 
   try {
-    const { collection, getDocs } = await import("https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js");
+    const { collection, getDocs } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
     const snapshot = await getDocs(collection(window.db, "monsters"));
 
     if (snapshot.empty) {
@@ -474,12 +474,17 @@ function loadMonster(m) {
 }
 
 // Delete Monster
-function deleteMonster(index) {
+async function deleteMonster(id) {
   if (!confirm("Delete this monster?")) return;
-  const monsters = JSON.parse(localStorage.getItem("dc20_monsters") || "[]");
-  monsters.splice(index, 1);
-  localStorage.setItem("dc20_monsters", JSON.stringify(monsters));
-  loadSavedMonsters();
+
+  try {
+    const { doc, deleteDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    await deleteDoc(doc(window.db, "monsters", id));
+    loadSavedMonsters();
+  } catch (e) {
+    console.error("Delete Error:", e);
+    alert("Error deleting: " + e.message);
+  }
 }
 
 // Copy Stats to Clipboard

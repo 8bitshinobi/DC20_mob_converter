@@ -383,14 +383,11 @@
 
 <!-- Link to the JavaScript file -->
  <script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-  // Your web app's Firebase configuration
   const firebaseConfig = {
-    apiKey: "AIzaSyCTpuTyKuUQm04-Ny7FAIhMADf0FtrIp6U",
+    apiKey: "YOUR_AIzaSyCTpuTyKuUQm04-Ny7FAIhMADf0FtrIp6U",
     authDomain: "dc20-converter.firebaseapp.com",
     projectId: "dc20-converter",
     storageBucket: "dc20-converter.firebasestorage.app",
@@ -398,9 +395,12 @@
     appId: "1:632779141752:web:42211e89414d341a7cb38d"
   };
 
-  // Initialize Firebase
   const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  window.db = db;
+  console.log("Firebase connected successfully");
 </script>
+
 <script src="data.js"></script>
 <script src="app.js"></script>
 
