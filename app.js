@@ -527,8 +527,9 @@ async function loadSavedMonsters() {
       const li = document.createElement("li");
       li.className = "saved-item";
       li.innerHTML = `<strong>${m.name}</strong> (${m.level}, ${m.difficulty})
-  <button class="delete-btn" onclick="deleteMonster('${id}')">Delete</button>
-  <button class="delete-btn" style="background:#2c3e50; margin-right:5px;" onclick="event.stopPropagation(); printMonsterCard(${JSON.stringify(m).replace(/"/g, '&quot;')})">Print</button>`;
+      <button class="delete-btn" onclick="deleteMonster('${id}')">Delete</button>
+      <button class="delete-btn" style="background:#2c3e50; margin-right:5px;" onclick="event.stopPropagation(); printMonsterCard(${JSON.stringify(m).replace(/"/g, '&quot;')})">Print</button>`;
+      li.onclick = (e) => {
         if (e.target.className !== 'delete-btn') {
           loadMonster(m);
         }
