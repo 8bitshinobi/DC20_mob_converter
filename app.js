@@ -2,6 +2,16 @@ let currentMonster = null;
 let currentLevel = "";
 // --- SETTINGS HELPER FUNCTIONS ---
 
+function calcBonus(scoreId, bonusId) {
+    const score = parseInt(document.getElementById(scoreId).value);
+    const bonusField = document.getElementById(bonusId);
+    if (!isNaN(score)) {
+        bonusField.value = Math.floor((score - 10) / 2);
+    } else {
+        bonusField.value = "";
+    }
+}
+
 // Get BASE_STATS (custom or default)
 function getBaseStats() {
   const custom = localStorage.getItem("dc20_base_stats_custom");
