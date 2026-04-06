@@ -176,6 +176,7 @@ function convertMonster() {
   const immunities = document.getElementById("mImmunities").value;
   const senses = document.getElementById("mSenses").value;
   const languages = document.getElementById("mLanguages").value;
+  const gear = document.getElementById("mGear").value;
 
   // Get ability scores and bonuses
   const str = parseInt(document.getElementById("mSTR").value);
@@ -311,6 +312,7 @@ function convertMonster() {
     immunities: immunities,
     senses: senses,
     languages: languages,
+    gear: gear,
     traits: traits,
     actions: actions,
     bonusActions: bonusActions,
@@ -556,6 +558,7 @@ function loadMonster(m) {
   document.getElementById("mImmunities").value = m.immunities || "";
   document.getElementById("mSenses").value = m.senses || "";
   document.getElementById("mLanguages").value = m.languages || "";
+  document.getElementById("mGear").value = m.gear || "";
 
   // Fill ability scores and bonuses
   document.getElementById("mSTR").value = m.original5e_str || "";
