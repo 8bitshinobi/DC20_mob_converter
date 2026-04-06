@@ -213,41 +213,89 @@
             <div>
                 <h3>DC20 Result</h3>
                 <div id="resultArea" class="result-box">
-                    <h4 id="resName"></h4>
-                    <p><strong>Level:</strong> <span id="resLevel"></span> | <strong>Type:</strong> <span id="resType"></span></p>
-                    <div class="stat-grid">
-                        <div class="stat-item"><div class="stat-label">HP</div><div class="stat-value" id="resHP"></div></div>
-                        <div class="stat-item"><div class="stat-label">PD</div><div class="stat-value" id="resPD"></div></div>
-                        <div class="stat-item"><div class="stat-label">AD</div><div class="stat-value" id="resAD"></div></div>
-                        <div class="stat-item"><div class="stat-label">Attack</div><div class="stat-value" id="resAttack"></div></div>
-                        <div class="stat-item"><div class="stat-label">Damage</div><div class="stat-value" id="resDamage"></div></div>
-                        <div class="stat-item"><div class="stat-label">Save DC</div><div class="stat-value" id="resSaveDC"></div></div>
-                        <div class="stat-item"><div class="stat-label">Speed</div><div class="stat-value" id="resSpeed"></div></div>
-                        <div class="stat-item"><div class="stat-label">Might</div><div class="stat-value" id="resMight"></div></div>
-                        <div class="stat-item"><div class="stat-label">Agility</div><div class="stat-value" id="resAgility"></div></div>
-                        <div class="stat-item"><div class="stat-label">Intelligence</div><div class="stat-value" id="resIntelligence"></div></div>
-                        <div class="stat-item"><div class="stat-label">Charisma</div><div class="stat-value" id="resCharisma"></div></div>
-                        <div class="stat-item"><div class="stat-label">Prime</div><div class="stat-value" id="resPrime"></div></div>
-                        <div class="stat-item"><div class="stat-label">CM</div><div class="stat-value" id="resCM"></div></div>
-                        <div class="stat-item"><div class="stat-label">Total Feature Power</div><div class="stat-value" id="resTotalFeaturePower"></div></div>
-                    </div>
-                    <div class="form-group" style="margin-top: 20px;">
-                        <label for="difficultySelect">Adjust Difficulty Type</label>
-                        <select id="difficultySelect" onchange="applyDifficultyModifier()">
-                            <option value="Medium">Medium (Standard)</option>
-                            <option value="Minion">Minion</option>
-                            <option value="Easy">Easy</option>
-                            <option value="Hard">Hard</option>
-                            <option value="Boss">Boss</option>
-                            <option value="Solo">Solo</option>
-                        </select>
-                    </div>
-                    <div id="finalAbilities" class="ability-list"></div>
-                    <div style="margin-top: 20px;">
-                        <button onclick="saveMonster()">💾 Save to Library</button>
-                        <button onclick="copyStats()" class="secondary">📋 Copy Stats</button>
-                    </div>
-                </div>
+    <h4 id="resName"></h4>
+    <p>
+        <strong>Level:</strong> <span id="resLevel"></span> |
+        <strong>Type:</strong> <span id="resType"></span> |
+        <strong>Size:</strong> <span id="resSize"></span> |
+        <strong>Alignment:</strong> <span id="resAlignment"></span>
+    </p>
+    <p><strong>Speed:</strong> <span id="resSpeedText"></span></p>
+
+    <h5 style="margin-top: 15px; border-bottom: 1px solid #ddd; padding-bottom: 5px;">DC20 Stats</h5>
+    <div class="stat-grid">
+        <div class="stat-item"><div class="stat-label">HP</div><div class="stat-value" id="resHP"></div></div>
+        <div class="stat-item"><div class="stat-label">PD</div><div class="stat-value" id="resPD"></div></div>
+        <div class="stat-item"><div class="stat-label">AD</div><div class="stat-value" id="resAD"></div></div>
+        <div class="stat-item"><div class="stat-label">Attack</div><div class="stat-value" id="resAttack"></div></div>
+        <div class="stat-item"><div class="stat-label">Damage</div><div class="stat-value" id="resDamage"></div></div>
+        <div class="stat-item"><div class="stat-label">Save DC</div><div class="stat-value" id="resSaveDC"></div></div>
+        <div class="stat-item"><div class="stat-label">Speed</div><div class="stat-value" id="resSpeed"></div></div>
+        <div class="stat-item"><div class="stat-label">Might</div><div class="stat-value" id="resMight"></div></div>
+        <div class="stat-item"><div class="stat-label">Agility</div><div class="stat-value" id="resAgility"></div></div>
+        <div class="stat-item"><div class="stat-label">Intelligence</div><div class="stat-value" id="resIntelligence"></div></div>
+        <div class="stat-item"><div class="stat-label">Charisma</div><div class="stat-value" id="resCharisma"></div></div>
+        <div class="stat-item"><div class="stat-label">Prime</div><div class="stat-value" id="resPrime"></div></div>
+        <div class="stat-item"><div class="stat-label">CM</div><div class="stat-value" id="resCM"></div></div>
+        <div class="stat-item"><div class="stat-label">Total Feature Power</div><div class="stat-value" id="resTotalFeaturePower"></div></div>
+    </div>
+
+    <div class="form-group" style="margin-top: 20px;">
+        <label for="difficultySelect">Adjust Difficulty Type</label>
+        <select id="difficultySelect" onchange="applyDifficultyModifier()">
+            <option value="Medium">Medium (Standard)</option>
+            <option value="Minion">Minion</option>
+            <option value="Easy">Easy</option>
+            <option value="Hard">Hard</option>
+            <option value="Boss">Boss</option>
+            <option value="Solo">Solo</option>
+        </select>
+    </div>
+
+    <h5 style="margin-top: 15px; border-bottom: 1px solid #ddd; padding-bottom: 5px;">Combat Info</h5>
+    <p id="resSkills" style="display:none;"><strong>Skills:</strong> <span></span></p>
+    <p id="resVulnerabilities" style="display:none;"><strong>Vulnerabilities:</strong> <span></span></p>
+    <p id="resImmunities" style="display:none;"><strong>Immunities:</strong> <span></span></p>
+    <p id="resSenses" style="display:none;"><strong>Senses:</strong> <span></span></p>
+    <p id="resLanguages" style="display:none;"><strong>Languages:</strong> <span></span></p>
+
+    <div id="resTraits" style="display:none;">
+        <h5 style="margin-top: 15px; border-bottom: 1px solid #ddd; padding-bottom: 5px;">Traits</h5>
+        <div id="resTraitsList"></div>
+    </div>
+
+    <div id="resActions" style="display:none;">
+        <h5 style="margin-top: 15px; border-bottom: 1px solid #ddd; padding-bottom: 5px;">Actions</h5>
+        <div id="resActionsList"></div>
+    </div>
+
+    <div id="resBonusActions" style="display:none;">
+        <h5 style="margin-top: 15px; border-bottom: 1px solid #ddd; padding-bottom: 5px;">Bonus Actions</h5>
+        <div id="resBonusActionsList"></div>
+    </div>
+
+    <div id="resReactions" style="display:none;">
+        <h5 style="margin-top: 15px; border-bottom: 1px solid #ddd; padding-bottom: 5px;">Reactions</h5>
+        <div id="resReactionsList"></div>
+    </div>
+
+    <div id="resBossActions" style="display:none;">
+        <h5 style="margin-top: 15px; border-bottom: 1px solid #ddd; padding-bottom: 5px;">Boss Actions</h5>
+        <div id="resBossActionsList"></div>
+    </div>
+
+    <div id="resLore" style="display:none;">
+        <h5 style="margin-top: 15px; border-bottom: 1px solid #ddd; padding-bottom: 5px;">Lore</h5>
+        <div id="resLoreList"></div>
+    </div>
+
+    <div id="finalAbilities" class="ability-list"></div>
+
+    <div style="margin-top: 20px;">
+        <button onclick="saveMonster()">💾 Save to Library</button>
+        <button onclick="copyStats()" class="secondary">📋 Copy Stats</button>
+    </div>
+</div>
             </div>
         </div>
     </div>

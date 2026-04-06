@@ -227,6 +227,53 @@ function convertMonster() {
   currentLevel = CR_TO_LEVEL[cr] || "Level 1";
   document.getElementById("resLevel").innerText = currentLevel;
   document.getElementById("resName").innerText = name;
+  
+  // Populate new result fields
+  document.getElementById("resType").innerText = type || "—";
+  document.getElementById("resSize").innerText = size || "—";
+  document.getElementById("resAlignment").innerText = alignment || "—";
+  document.getElementById("resSpeedText").innerText = speed || "—";
+
+  // Show/hide optional fields
+  function showField(id, value) {
+    const el = document.getElementById(id);
+    if (value) {
+      el.style.display = "block";
+      el.querySelector("span").innerText = value;
+    } else {
+      el.style.display = "none";
+    }
+  }
+
+  showField("resSkills", skills);
+  showField("resVulnerabilities", vulnerabilities);
+  showField("resImmunities", immunities);
+  showField("resSenses", senses);
+  showField("resLanguages", languages);
+
+  // Populate dynamic sections
+  function showEntries(sectionId, listId, entries) {
+    const section = document.getElementById(sectionId);
+    const list = document.getElementById(listId);
+    if (entries && entries.length > 0) {
+      section.style.display = "block";
+      list.innerHTML = entries.map(e => `
+        <div class="ability-item">
+          <div class="ability-name">${e.name}</div>
+          <div>${e.description}</div>
+        </div>
+      `).join('');
+    } else {
+      section.style.display = "none";
+    }
+  }
+
+  showEntries("resTraits", "resTraitsList", traits);
+  showEntries("resActions", "resActionsList", actions);
+  showEntries("resBonusActions", "resBonusActionsList", bonusActions);
+  showEntries("resReactions", "resReactionsList", reactions);
+  showEntries("resBossActions", "resBossActionsList", bossActions);
+  showEntries("resLore", "resLoreList", lore);
 
   // Calculate DC20 Attributes
   const might = Math.floor((strMod + conMod) / 2);
