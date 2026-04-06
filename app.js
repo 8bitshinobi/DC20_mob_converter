@@ -163,10 +163,21 @@ function switchTab(id) {
 
 // Convert 5e Stats to DC20
 function convertMonster() {
-  // Get all input values
+  // Get basic fields
   const name = document.getElementById("mName").value;
   const cr = document.getElementById("mCR").value;
   const hp5e = document.getElementById("mHP").value;
+  const type = document.getElementById("mType").value;
+  const size = document.getElementById("mSize").value;
+  const alignment = document.getElementById("mAlignment").value;
+  const speed = document.getElementById("mSpeed").value;
+  const skills = document.getElementById("mSkills").value;
+  const vulnerabilities = document.getElementById("mVulnerabilities").value;
+  const immunities = document.getElementById("mImmunities").value;
+  const senses = document.getElementById("mSenses").value;
+  const languages = document.getElementById("mLanguages").value;
+
+  // Get ability scores and bonuses
   const str = parseInt(document.getElementById("mSTR").value);
   const dex = parseInt(document.getElementById("mDEX").value);
   const con = parseInt(document.getElementById("mCON").value);
@@ -174,37 +185,61 @@ function convertMonster() {
   const wis = parseInt(document.getElementById("mWIS").value);
   const cha = parseInt(document.getElementById("mCHA").value);
 
-  // Validate inputs
-  if (!name || isNaN(str) || isNaN(dex) || isNaN(con) || isNaN(intScore) || isNaN(wis) || isNaN(cha)) {
-    alert("Please fill in all stat fields with valid numbers.");
+  // Use score to calculate bonus, or fall back to manually entered bonus
+  const strMod = !isNaN(str) ? Math.floor((str - 10) / 2) : parseInt(document.getElementById("mSTRBonus").value) || 0;
+  const dexMod = !isNaN(dex) ? Math.floor((dex - 10) / 2) : parseInt(document.getElementById("mDEXBonus").value) || 0;
+  const conMod = !isNaN(con) ? Math.floor((con - 10) / 2) : parseInt(document.getElementById("mCONBonus").value) || 0;
+  const intMod = !isNaN(intScore) ? Math.floor((intScore - 10) / 2) : parseInt(document.getElementById("mINTBonus").value) || 0;
+  const wisMod = !isNaN(wis) ? Math.floor((wis - 10) / 2) : parseInt(document.getElementById("mWISBonus").value) || 0;
+  const chaMod = !isNaN(cha) ? Math.floor((cha - 10) / 2) : parseInt(document.getElementById("mCHABonus").value) || 0;
+
+  // Validate - only name is required now
+  if (!name) {
+    alert("Please enter a monster name.");
     return;
   }
 
-  // Calculate 5e Modifiers: floor((score - 10) / 2)
-  const strMod = Math.floor((str - 10) / 2);
-  const dexMod = Math.floor((dex - 10) / 2);
-  const conMod = Math.floor((con - 10) / 2);
-  const intMod = Math.floor((intScore - 10) / 2);
-  const wisMod = Math.floor((wis - 10) / 2);
-  const chaMod = Math.floor((cha - 10) / 2);
+  // Collect dynamic entries
+  function getEntries(containerId) {
+    const container = document.getElementById(containerId);
+    const entries = [];
+    container.querySelectorAll('.form-group').forEach(entry => {
+      const inputs = entry.querySelectorAll('input, textarea');
+      if (inputs.length >= 2) {
+        const entryName = inputs[0].value.trim();
+        const entryDesc = inputs[1].value.trim();
+        if (entryName || entryDesc) {
+          entries.push({ name: entryName, description: entryDesc });
+        }
+      }
+    });
+    return entries;
+  }
+
+  const traits = getEntries('traitsContainer');
+  const actions = getEntries('actionsContainer');
+  const bonusActions = getEntries('bonusActionsContainer');
+  const reactions = getEntries('reactionsContainer');
+  const bossActions = getEntries('bossActionsContainer');
+  const lore = getEntries('loreContainer');
 
   // Determine Level from CR
   currentLevel = CR_TO_LEVEL[cr] || "Level 1";
   document.getElementById("resLevel").innerText = currentLevel;
   document.getElementById("resName").innerText = name;
 
-  // Calculate DC20 Attributes USING MODIFIERS (per your CSV formulas)
+  // Calculate DC20 Attributes
   const might = Math.floor((strMod + conMod) / 2);
   const agility = dexMod;
   const intelligence = Math.floor((intMod + wisMod) / 2);
   const charisma = chaMod;
 
-  // Calculate Prime, CM, Total Feature Power from BASE_STATS
-    const base = getBaseStats()[currentLevel] || {hp:10,pd:12,ad:12,attack:4,damage:2,saveDC:14,speed:5,prime:0,cm:0,totalFeaturePower:0};
+  // Get Base Stats
+  const base = getBaseStats()[currentLevel] || {hp:10,pd:12,ad:12,attack:4,damage:2,saveDC:14,speed:5,prime:0,cm:0,totalFeaturePower:0};
 
-    document.getElementById("resPrime").innerText = base.prime;
-    document.getElementById("resCM").innerText = base.cm;
-    document.getElementById("resTotalFeaturePower").innerText = base.totalFeaturePower;
+  document.getElementById("resPrime").innerText = base.prime;
+  document.getElementById("resCM").innerText = base.cm;
+  document.getElementById("resTotalFeaturePower").innerText = base.totalFeaturePower;
 
   // Display Attributes
   document.getElementById("resMight").innerText = might;
@@ -220,13 +255,28 @@ function convertMonster() {
     name: name,
     cr: cr,
     level: currentLevel,
+    type: type,
+    size: size,
+    alignment: alignment,
+    speed: speed,
+    skills: skills,
+    vulnerabilities: vulnerabilities,
+    immunities: immunities,
+    senses: senses,
+    languages: languages,
+    traits: traits,
+    actions: actions,
+    bonusActions: bonusActions,
+    reactions: reactions,
+    bossActions: bossActions,
+    lore: lore,
     original5e_hp: hp5e || "",
-    original5e_str: str,
-    original5e_dex: dex,
-    original5e_con: con,
-    original5e_int: intScore,
-    original5e_wis: wis,
-    original5e_cha: cha,
+    original5e_str: isNaN(str) ? "" : str,
+    original5e_dex: isNaN(dex) ? "" : dex,
+    original5e_con: isNaN(con) ? "" : con,
+    original5e_int: isNaN(intScore) ? "" : intScore,
+    original5e_wis: isNaN(wis) ? "" : wis,
+    original5e_cha: isNaN(cha) ? "" : cha,
     original5e_strMod: strMod,
     original5e_dexMod: dexMod,
     original5e_conMod: conMod,
