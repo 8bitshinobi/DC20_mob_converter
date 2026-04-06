@@ -496,19 +496,49 @@ async function loadSavedMonsters() {
 function loadMonster(m) {
   if (!m) return;
 
-  // rest of your existing loadMonster code stays exactly the same
-  // just remove the first two lines that read from localStorage
-
-  // Fill Input Form
-  document.getElementById("mName").value = m.name;
-  document.getElementById("mCR").value = m.cr;
+  // Fill basic fields
+  document.getElementById("mName").value = m.name || "";
+  document.getElementById("mCR").value = m.cr || "0";
   document.getElementById("mHP").value = m.original5e_hp || "";
+  document.getElementById("mType").value = m.type || "";
+  document.getElementById("mSize").value = m.size || "";
+  document.getElementById("mAlignment").value = m.alignment || "";
+  document.getElementById("mSpeed").value = m.speed || "";
+  document.getElementById("mSkills").value = m.skills || "";
+  document.getElementById("mVulnerabilities").value = m.vulnerabilities || "";
+  document.getElementById("mImmunities").value = m.immunities || "";
+  document.getElementById("mSenses").value = m.senses || "";
+  document.getElementById("mLanguages").value = m.languages || "";
+
+  // Fill ability scores and bonuses
   document.getElementById("mSTR").value = m.original5e_str || "";
   document.getElementById("mDEX").value = m.original5e_dex || "";
   document.getElementById("mCON").value = m.original5e_con || "";
   document.getElementById("mINT").value = m.original5e_int || "";
   document.getElementById("mWIS").value = m.original5e_wis || "";
   document.getElementById("mCHA").value = m.original5e_cha || "";
+  document.getElementById("mSTRBonus").value = m.original5e_strMod || "";
+  document.getElementById("mDEXBonus").value = m.original5e_dexMod || "";
+  document.getElementById("mCONBonus").value = m.original5e_conMod || "";
+  document.getElementById("mINTBonus").value = m.original5e_intMod || "";
+  document.getElementById("mWISBonus").value = m.original5e_wisMod || "";
+  document.getElementById("mCHABonus").value = m.original5e_chaMod || "";
+
+  // Restore dynamic entries
+  function loadEntries(containerId, entries) {
+    const container = document.getElementById(containerId);
+    container.innerHTML = "";
+    if (entries && entries.length > 0) {
+      entries.forEach(entry => addEntry(containerId, entry.name, entry.description));
+    }
+  }
+
+  loadEntries('traitsContainer', m.traits);
+  loadEntries('actionsContainer', m.actions);
+  loadEntries('bonusActionsContainer', m.bonusActions);
+  loadEntries('reactionsContainer', m.reactions);
+  loadEntries('bossActionsContainer', m.bossActions);
+  loadEntries('loreContainer', m.lore);
 
   // Fill Result Display
   document.getElementById("resName").innerText = m.name;
@@ -525,8 +555,8 @@ function loadMonster(m) {
   document.getElementById("resIntelligence").innerText = m.dc20_intelligence || "";
   document.getElementById("resCharisma").innerText = m.dc20_charisma || "";
   document.getElementById("resPrime").innerText = m.dc20_prime || "";
-    document.getElementById("resCM").innerText = m.dc20_cm || "";
-    document.getElementById("resTotalFeaturePower").innerText = m.dc20_totalFeaturePower || "";
+  document.getElementById("resCM").innerText = m.dc20_cm || "";
+  document.getElementById("resTotalFeaturePower").innerText = m.dc20_totalFeaturePower || "";
 
   // Restore Difficulty
   const savedDiff = m.difficulty || "Medium";
