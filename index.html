@@ -27,7 +27,7 @@
         <div class="grid">
             <div>
                 <h3>Enter 5e Monster Stats</h3>
-                <form id="monsterForm">
+    <form id="monsterForm">
     <div class="form-group">
         <label for="mName">Monster Name</label>
         <input type="text" id="mName" placeholder="e.g., Goblin" required>
@@ -127,6 +127,39 @@
     <div class="form-group">
         <label for="mSpeed">Speed</label>
         <input type="text" id="mSpeed" placeholder="e.g., 30 ft., fly 60 ft., swim 30 ft.">
+    </div>
+    <h4 style="margin-top: 15px;">Ability Scores</h4>
+    <div class="grid" style="grid-template-columns: repeat(3, 1fr); gap: 10px;">
+        <div class="form-group">
+            <label for="mSTR">Strength (STR)</label>
+            <input type="number" id="mSTR" placeholder="Score" oninput="calcBonus('mSTR', 'mSTRBonus')">
+            <input type="number" id="mSTRBonus" placeholder="Bonus" style="margin-top: 5px;">
+        </div>
+        <div class="form-group">
+            <label for="mDEX">Dexterity (DEX)</label>
+            <input type="number" id="mDEX" placeholder="Score" oninput="calcBonus('mDEX', 'mDEXBonus')">
+            <input type="number" id="mDEXBonus" placeholder="Bonus" style="margin-top: 5px;">
+        </div>
+        <div class="form-group">
+            <label for="mCON">Constitution (CON)</label>
+            <input type="number" id="mCON" placeholder="Score" oninput="calcBonus('mCON', 'mCONBonus')">
+            <input type="number" id="mCONBonus" placeholder="Bonus" style="margin-top: 5px;">
+        </div>
+        <div class="form-group">
+            <label for="mINT">Intelligence (INT)</label>
+            <input type="number" id="mINT" placeholder="Score" oninput="calcBonus('mINT', 'mINTBonus')">
+            <input type="number" id="mINTBonus" placeholder="Bonus" style="margin-top: 5px;">
+        </div>
+        <div class="form-group">
+            <label for="mWIS">Wisdom (WIS)</label>
+            <input type="number" id="mWIS" placeholder="Score" oninput="calcBonus('mWIS', 'mWISBonus')">
+            <input type="number" id="mWISBonus" placeholder="Bonus" style="margin-top: 5px;">
+        </div>
+        <div class="form-group">
+            <label for="mCHA">Charisma (CHA)</label>
+            <input type="number" id="mCHA" placeholder="Score" oninput="calcBonus('mCHA', 'mCHABonus')">
+            <input type="number" id="mCHABonus" placeholder="Bonus" style="margin-top: 5px;">
+        </div>
     </div>
             </div>
 
