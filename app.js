@@ -12,6 +12,19 @@ function calcBonus(scoreId, bonusId) {
     }
 }
 
+function addEntry(containerId, name = '', description = '') {
+    const container = document.getElementById(containerId);
+    const entry = document.createElement('div');
+    entry.className = 'form-group';
+    entry.style.cssText = 'border: 1px solid #ddd; padding: 10px; border-radius: 4px; margin-bottom: 8px;';
+    entry.innerHTML = `
+        <input type="text" placeholder="Name" value="${name}" style="margin-bottom: 5px;">
+        <textarea placeholder="Description" style="min-height: 60px;">${description}</textarea>
+        <button type="button" onclick="this.parentElement.remove()" style="background: #e74c3c; padding: 4px 10px; font-size: 12px; margin-top: 5px;">Remove</button>
+    `;
+    container.appendChild(entry);
+}
+
 // Get BASE_STATS (custom or default)
 function getBaseStats() {
   const custom = localStorage.getItem("dc20_base_stats_custom");

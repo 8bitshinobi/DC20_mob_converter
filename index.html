@@ -182,8 +182,30 @@
         <label for="mLanguages">Languages</label>
         <input type="text" id="mLanguages" placeholder="e.g., Common, Goblin">
     </div>
-            </div>
+    <h4 style="margin-top: 15px;">Traits</h4>
+    <div id="traitsContainer"></div>
+    <button type="button" onclick="addEntry('traitsContainer')">+ Add Trait</button>
 
+    <h4 style="margin-top: 15px;">Actions</h4>
+    <div id="actionsContainer"></div>
+    <button type="button" onclick="addEntry('actionsContainer')">+ Add Action</button>
+
+    <h4 style="margin-top: 15px;">Bonus Actions</h4>
+    <div id="bonusActionsContainer"></div>
+    <button type="button" onclick="addEntry('bonusActionsContainer')">+ Add Bonus Action</button>
+
+    <h4 style="margin-top: 15px;">Reactions</h4>
+    <div id="reactionsContainer"></div>
+    <button type="button" onclick="addEntry('reactionsContainer')">+ Add Reaction</button>
+
+    <h4 style="margin-top: 15px;">Boss Actions</h4>
+    <div id="bossActionsContainer"></div>
+    <button type="button" onclick="addEntry('bossActionsContainer')">+ Add Boss Action</button>
+
+    <br><br>
+    <button type="button" onclick="convertMonster()">Convert to DC20</button>
+            </div>
+          </form>        
             <div>
                 <h3>DC20 Result</h3>
                 <div id="resultArea" class="result-box">
