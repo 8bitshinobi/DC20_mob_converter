@@ -526,8 +526,9 @@ async function loadSavedMonsters() {
       const id = doc.id;
       const li = document.createElement("li");
       li.className = "saved-item";
-      li.innerHTML = `<strong>${m.name}</strong> (${m.level}, ${m.difficulty})<button class="delete-btn" onclick="deleteMonster('${id}')">Delete</button>`;
-      li.onclick = (e) => {
+      li.innerHTML = `<strong>${m.name}</strong> (${m.level}, ${m.difficulty})
+  <button class="delete-btn" onclick="deleteMonster('${id}')">Delete</button>
+  <button class="delete-btn" style="background:#2c3e50; margin-right:5px;" onclick="event.stopPropagation(); printMonsterCard(${JSON.stringify(m).replace(/"/g, '&quot;')})">Print</button>`;
         if (e.target.className !== 'delete-btn') {
           loadMonster(m);
         }
@@ -1418,11 +1419,39 @@ function viewMonsterCard(index) {
 }
 
 // Print single monster card
-function printMonsterCard(index) {
-  const monsters = JSON.parse(localStorage.getItem("dc20_monsters") || "[]");
-  const m = monsters[index];
-  
-  // Create print window
+function printMonsterCard(m) {
+  if (!m) return;
+
+  // Calculate PD/AD thresholds
+  const pd1 = m.dc20_pd;
+  const pd2 = pd1 + 5;
+  const pd3 = pd2 + 5;
+  const ad1 = m.dc20_ad;
+  const ad2 = ad1 + 5;
+  const ad3 = ad2 + 5;
+
+  // Helper to render a list of entries (traits, actions, etc.)
+  function renderEntries(entries) {
+    if (!entries || entries.length === 0) return '';
+    return entries.map(e => `
+      <tr>
+        <td class="entry-name">${e.name}</td>
+        <td class="entry-desc">${e.description}</td>
+      </tr>
+    `).join('');
+  }
+
+  // Helper to render a section only if it has entries
+  function renderSection(title, entries) {
+    if (!entries || entries.length === 0) return '';
+    return `
+      <tr class="section-header">
+        <td colspan="2">${title}</td>
+      </tr>
+      ${renderEntries(entries)}
+    `;
+  }
+
   const printWindow = window.open('', '_blank');
   printWindow.document.write(`
     <!DOCTYPE html>
@@ -1430,59 +1459,133 @@ function printMonsterCard(index) {
     <head>
       <title>${m.name} - DC20 Monster Card</title>
       <style>
-        body { font-family: Arial, sans-serif; padding: 20px; }
-        .card { border: 2px solid #333; border-radius: 8px; padding: 20px; max-width: 400px; margin: 0 auto; }
-        .header { text-align: center; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 15px; }
-        .header h2 { margin: 0; color: #2c3e50; }
-        .level-badge { background: #e74c3c; color: white; padding: 5px 10px; border-radius: 4px; font-size: 12px; }
-        .stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 15px; }
-        .stat { background: #f8f9fa; padding: 8px; border-radius: 4px; }
-        .stat-label { font-size: 11px; color: #666; text-transform: uppercase; }
-        .stat-value { font-size: 18px; font-weight: bold; color: #2c3e50; }
-        .attributes { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 15px; }
-        .attr { background: #ecf0f1; padding: 6px; border-radius: 4px; text-align: center; }
-        .attr-label { font-size: 10px; color: #666; }
-        .attr-value { font-size: 14px; font-weight: bold; }
-        .features { background: #fff3cd; padding: 10px; border-radius: 4px; margin-bottom: 15px; }
-        .footer { text-align: center; font-size: 11px; color: #999; margin-top: 20px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: Arial, sans-serif; font-size: 11px; padding: 15px; color: #000; }
+        .card { border: 2px solid #333; border-radius: 6px; padding: 12px; max-width: 500px; margin: 0 auto; }
+        
+        /* Header */
+        .header { border-bottom: 2px solid #333; padding-bottom: 8px; margin-bottom: 8px; }
+        .monster-name { font-size: 18px; font-weight: bold; text-transform: uppercase; }
+        .monster-sub { font-size: 10px; color: #444; margin-top: 2px; }
+        .level-badge { float: right; background: #2c3e50; color: white; padding: 3px 8px; border-radius: 4px; font-size: 10px; }
+
+        /* PD/AD thresholds */
+        .threshold-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+        .threshold-box { border: 1px solid #ccc; border-radius: 4px; padding: 4px; }
+        .threshold-label { font-size: 9px; color: #666; text-transform: uppercase; font-weight: bold; }
+        .threshold-values { display: flex; justify-content: space-between; font-weight: bold; font-size: 13px; }
+
+        /* Main stats */
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-bottom: 8px; }
+        .stat-box { background: #f8f9fa; border: 1px solid #ddd; border-radius: 4px; padding: 4px; text-align: center; }
+        .stat-label { font-size: 9px; color: #666; text-transform: uppercase; }
+        .stat-value { font-size: 14px; font-weight: bold; color: #2c3e50; }
+
+        /* Attributes */
+        .attr-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin-bottom: 8px; border: 1px solid #ddd; border-radius: 4px; padding: 5px; }
+        .attr-box { text-align: center; }
+        .attr-label { font-size: 9px; color: #666; text-transform: uppercase; }
+        .attr-value { font-size: 13px; font-weight: bold; }
+
+        /* Entries table */
+        .entries-table { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
+        .section-header td { background: #2c3e50; color: white; padding: 3px 6px; font-weight: bold; font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; }
+        .entry-name { font-weight: bold; padding: 4px 6px; width: 25%; vertical-align: top; border-bottom: 1px solid #eee; }
+        .entry-desc { padding: 4px 6px; vertical-align: top; border-bottom: 1px solid #eee; line-height: 1.4; }
+
+        /* Combat info */
+        .info-row { margin-bottom: 4px; font-size: 10px; }
+        .info-label { font-weight: bold; }
+
+        /* Lore */
+        .lore-section { border-top: 2px solid #333; margin-top: 8px; padding-top: 8px; }
+        .lore-title { font-weight: bold; font-size: 11px; text-transform: uppercase; margin-bottom: 4px; }
+        .lore-entry { margin-bottom: 6px; line-height: 1.4; }
+
+        /* Footer */
+        .footer { text-align: center; font-size: 9px; color: #999; margin-top: 10px; border-top: 1px solid #eee; padding-top: 6px; }
+
         @media print { .no-print { display: none; } }
       </style>
     </head>
     <body>
       <div class="card">
+
+        <!-- Header -->
         <div class="header">
-          <h2>${m.name}</h2>
           <span class="level-badge">${m.level} • ${m.difficulty}</span>
+          <div class="monster-name">${m.name}</div>
+          <div class="monster-sub">${[m.size, m.type, m.alignment].filter(Boolean).join(', ')}</div>
         </div>
-        
-        <div class="stats">
-          <div class="stat"><div class="stat-label">HP</div><div class="stat-value">${m.dc20_hp}</div></div>
-          <div class="stat"><div class="stat-label">PD</div><div class="stat-value">${m.dc20_pd}</div></div>
-          <div class="stat"><div class="stat-label">AD</div><div class="stat-value">${m.dc20_ad}</div></div>
-          <div class="stat"><div class="stat-label">Attack</div><div class="stat-value">${m.dc20_attack}</div></div>
-          <div class="stat"><div class="stat-label">Damage</div><div class="stat-value">${m.dc20_damage}</div></div>
-          <div class="stat"><div class="stat-label">Save DC</div><div class="stat-value">${m.dc20_saveDC}</div></div>
-          <div class="stat"><div class="stat-label">Speed</div><div class="stat-value">${m.dc20_speed}</div></div>
+
+        <!-- PD / AD Thresholds -->
+        <div class="threshold-grid">
+          <div class="threshold-box">
+            <div class="threshold-label">Physical Defense (PD)</div>
+            <div class="threshold-values">
+              <span>${pd1}</span><span>${pd2}</span><span>${pd3}</span>
+            </div>
+          </div>
+          <div class="threshold-box">
+            <div class="threshold-label">Area Defense (AD)</div>
+            <div class="threshold-values">
+              <span>${ad1}</span><span>${ad2}</span><span>${ad3}</span>
+            </div>
+          </div>
         </div>
-        
-        <div class="attributes">
-          <div class="attr"><div class="attr-label">Might</div><div class="attr-value">${m.dc20_might}</div></div>
-          <div class="attr"><div class="attr-label">Agility</div><div class="attr-value">${m.dc20_agility}</div></div>
-          <div class="attr"><div class="attr-label">Intelligence</div><div class="attr-value">${m.dc20_intelligence}</div></div>
-          <div class="attr"><div class="attr-label">Charisma</div><div class="attr-value">${m.dc20_charisma}</div></div>
+
+        <!-- Main Stats -->
+        <div class="stats-grid">
+          <div class="stat-box"><div class="stat-label">HP</div><div class="stat-value">${m.dc20_hp}</div></div>
+          <div class="stat-box"><div class="stat-label">Attack</div><div class="stat-value">+${m.dc20_attack}</div></div>
+          <div class="stat-box"><div class="stat-label">Damage</div><div class="stat-value">${m.dc20_damage}</div></div>
+          <div class="stat-box"><div class="stat-label">Save DC</div><div class="stat-value">${m.dc20_saveDC}</div></div>
+          <div class="stat-box"><div class="stat-label">Speed</div><div class="stat-value">${m.dc20_speed}</div></div>
+          <div class="stat-box"><div class="stat-label">Prime</div><div class="stat-value">${m.dc20_prime}</div></div>
+          <div class="stat-box"><div class="stat-label">CM</div><div class="stat-value">${m.dc20_cm}</div></div>
+          <div class="stat-box"><div class="stat-label">AP</div><div class="stat-value">__</div></div>
         </div>
-        
-        ${(m.dc20_prime || m.dc20_cm || m.dc20_totalFeaturePower) ? `
-        <div class="features">
-          ${m.dc20_prime ? `<span>Prime: ${m.dc20_prime}</span> ` : ''}
-          ${m.dc20_cm ? `<span>CM: ${m.dc20_cm}</span> ` : ''}
-          ${m.dc20_totalFeaturePower ? `<span>Features: ${m.dc20_totalFeaturePower}</span>` : ''}
+
+        <!-- Attributes -->
+        <div class="attr-grid">
+          <div class="attr-box"><div class="attr-label">Might</div><div class="attr-value">${m.dc20_might}</div></div>
+          <div class="attr-box"><div class="attr-label">Agility</div><div class="attr-value">${m.dc20_agility}</div></div>
+          <div class="attr-box"><div class="attr-label">Charisma</div><div class="attr-value">${m.dc20_charisma}</div></div>
+          <div class="attr-box"><div class="attr-label">Intelligence</div><div class="attr-value">${m.dc20_intelligence}</div></div>
+          <div class="attr-box"><div class="attr-label">DR</div><div class="attr-value">__</div></div>
+        </div>
+
+        <!-- Combat Info -->
+        ${m.skills ? `<div class="info-row"><span class="info-label">Skills:</span> ${m.skills}</div>` : ''}
+        ${m.vulnerabilities ? `<div class="info-row"><span class="info-label">Vulnerabilities:</span> ${m.vulnerabilities}</div>` : ''}
+        ${m.immunities ? `<div class="info-row"><span class="info-label">Immunities:</span> ${m.immunities}</div>` : ''}
+        ${m.senses ? `<div class="info-row"><span class="info-label">Senses:</span> ${m.senses}</div>` : ''}
+        ${m.languages ? `<div class="info-row"><span class="info-label">Languages:</span> ${m.languages}</div>` : ''}
+        ${m.gear ? `<div class="info-row"><span class="info-label">Gear:</span> ${m.gear}</div>` : ''}
+        ${m.speed ? `<div class="info-row"><span class="info-label">Speed:</span> ${m.speed}</div>` : ''}
+
+        <!-- Traits, Actions, Bonus Actions, Reactions, Boss Actions -->
+        <table class="entries-table">
+          ${renderSection('Traits', m.traits)}
+          ${renderSection('Actions', m.actions)}
+          ${renderSection('Bonus Actions', m.bonusActions)}
+          ${renderSection('Reactions', m.reactions)}
+          ${renderSection('Boss Actions', m.bossActions)}
+        </table>
+
+        <!-- Lore -->
+        ${m.lore && m.lore.length > 0 ? `
+        <div class="lore-section">
+          <div class="lore-title">${m.name} Lore</div>
+          ${m.lore.map(l => `
+            <div class="lore-entry"><strong>${l.name}</strong> ${l.description}</div>
+          `).join('')}
         </div>
         ` : ''}
-        
+
         <div class="footer">Generated by D&D 5e to DC20 Converter</div>
       </div>
-      
+
       <script>
         window.onload = function() { window.print(); }
       </script>
