@@ -226,8 +226,9 @@ function convertMonster() {
   // Determine Level from CR
   currentLevel = CR_TO_LEVEL[cr] || "Level 1";
   document.getElementById("resLevel").innerText = currentLevel;
+  console.log("Populating fields - type:", type, "size:", size, "alignment:", alignment, "speed:", speed);
   document.getElementById("resName").innerText = name;
-  
+
   // Populate new result fields
   document.getElementById("resType").innerText = type || "—";
   document.getElementById("resSize").innerText = size || "—";
