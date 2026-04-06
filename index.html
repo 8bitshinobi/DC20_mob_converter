@@ -28,35 +28,106 @@
             <div>
                 <h3>Enter 5e Monster Stats</h3>
                 <form id="monsterForm">
-                    <div class="form-group"><label for="mName">Monster Name</label><input type="text" id="mName" placeholder="e.g., Goblin" required></div>
-                    <div class="form-group">
-                        <label for="mCR">Challenge Rating (CR)</label>
-                        <select id="mCR" required>
-                            <option value="0">CR 0</option><option value="0.125">CR 1/8</option><option value="0.25">CR 1/4</option>
-                            <option value="0.5">CR 1/2</option><option value="1">CR 1</option><option value="2">CR 2</option>
-                            <option value="3">CR 3</option><option value="4">CR 4</option><option value="5">CR 5</option>
-                            <option value="6">CR 6</option><option value="7">CR 7</option><option value="8">CR 8</option>
-                            <option value="9">CR 9</option><option value="10">CR 10</option><option value="11">CR 11</option>
-                            <option value="12">CR 12</option><option value="13">CR 13</option><option value="14">CR 14</option>
-                            <option value="15">CR 15</option><option value="16">CR 16</option><option value="17">CR 17</option>
-                            <option value="18">CR 18</option><option value="19">CR 19</option><option value="20">CR 20</option>
-                        </select>
-                    </div>
-                    <div class="form-group"><label for="mHP">Hit Points (HP)</label><input type="number" id="mHP" required></div>
-                    <div class="form-group"><label for="mAC">Armor Class (AC)</label><input type="number" id="mAC" required></div>
-                    <div class="form-group"><label for="mSTR">Strength (STR)</label><input type="number" id="mSTR" required></div>
-                    <div class="form-group"><label for="mDEX">Dexterity (DEX)</label><input type="number" id="mDEX" required></div>
-                    <div class="form-group"><label for="mCON">Constitution (CON)</label><input type="number" id="mCON" required></div>
-                    <div class="form-group"><label for="mINT">Intelligence (INT)</label><input type="number" id="mINT" required></div>
-                    <div class="form-group"><label for="mWIS">Wisdom (WIS)</label><input type="number" id="mWIS" required></div>
-                    <div class="form-group"><label for="mCHA">Charisma (CHA)</label><input type="number" id="mCHA" required></div>
-                    <div class="form-group">
-                        <label for="mAbilities">Special Abilities (5e Description)</label>
-                        <textarea id="mAbilities" placeholder="e.g., Pack Tactics: The goblin has advantage..." oninput="showAbilitySuggestions()"></textarea>
-                        <div id="abilitySuggestions" class="ability-suggestions" style="display:none;"></div>
-                    </div>
-                    <button type="button" onclick="convertMonster()">Convert to DC20</button>
-                </form>
+    <div class="form-group">
+        <label for="mName">Monster Name</label>
+        <input type="text" id="mName" placeholder="e.g., Goblin" required>
+    </div>
+
+    <div class="grid" style="grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+        <div class="form-group">
+            <label for="mType">Monster Type</label>
+            <select id="mType">
+                <option value="">Select Type</option>
+                <option>Aberration</option>
+                <option>Beast</option>
+                <option>Celestial</option>
+                <option>Construct</option>
+                <option>Dragon</option>
+                <option>Elemental</option>
+                <option>Fey</option>
+                <option>Fiend</option>
+                <option>Giant</option>
+                <option>Humanoid</option>
+                <option>Monstrosity</option>
+                <option>Ooze</option>
+                <option>Plant</option>
+                <option>Undead</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="mSize">Size</label>
+            <select id="mSize">
+                <option value="">Select Size</option>
+                <option>Tiny</option>
+                <option>Small</option>
+                <option>Medium</option>
+                <option>Large</option>
+                <option>Huge</option>
+                <option>Gargantuan</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="mAlignment">Alignment</label>
+            <select id="mAlignment">
+                <option value="">Select Alignment</option>
+                <option>Lawful Good</option>
+                <option>Neutral Good</option>
+                <option>Chaotic Good</option>
+                <option>Lawful Neutral</option>
+                <option>True Neutral</option>
+                <option>Chaotic Neutral</option>
+                <option>Lawful Evil</option>
+                <option>Neutral Evil</option>
+                <option>Chaotic Evil</option>
+                <option>Unaligned</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="grid" style="grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+        <div class="form-group">
+            <label for="mCR">Challenge Rating (CR)</label>
+            <select id="mCR" required>
+                <option value="0">CR 0</option>
+                <option value="0.125">CR 1/8</option>
+                <option value="0.25">CR 1/4</option>
+                <option value="0.5">CR 1/2</option>
+                <option value="1">CR 1</option>
+                <option value="2">CR 2</option>
+                <option value="3">CR 3</option>
+                <option value="4">CR 4</option>
+                <option value="5">CR 5</option>
+                <option value="6">CR 6</option>
+                <option value="7">CR 7</option>
+                <option value="8">CR 8</option>
+                <option value="9">CR 9</option>
+                <option value="10">CR 10</option>
+                <option value="11">CR 11</option>
+                <option value="12">CR 12</option>
+                <option value="13">CR 13</option>
+                <option value="14">CR 14</option>
+                <option value="15">CR 15</option>
+                <option value="16">CR 16</option>
+                <option value="17">CR 17</option>
+                <option value="18">CR 18</option>
+                <option value="19">CR 19</option>
+                <option value="20">CR 20</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="mHP">Hit Points (HP)</label>
+            <input type="number" id="mHP" required>
+        </div>
+        <div class="form-group">
+            <label for="mAC">Armor Class (AC)</label>
+            <input type="number" id="mAC" required>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="mSpeed">Speed</label>
+        <input type="text" id="mSpeed" placeholder="e.g., 30 ft., fly 60 ft., swim 30 ft.">
+    </div>
             </div>
 
             <div>
