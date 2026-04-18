@@ -605,7 +605,26 @@
 </div>
 
 <!-- Link to the JavaScript file -->
-<script type="module" src="firebase-init.js"></script>
+<script>
+  // Firebase loaded via CDN scripts below
+</script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script>
+  const firebaseConfig = {
+    // your existing config values
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  window.db = firebase.firestore();
+  window.auth = firebase.auth();
+  window.firebaseSignIn = (email, password) => firebase.auth().signInWithEmailAndPassword(email, password);
+  window.firebaseSignOut = () => firebase.auth().signOut();
+  window.firebaseOnAuthStateChanged = (callback) => firebase.auth().onAuthStateChanged(callback);
+
+  console.log("Firebase connected successfully");
+</script>
 <script src="data.js"></script>
 <script src="app.js"></script>
 
