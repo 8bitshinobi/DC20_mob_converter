@@ -611,17 +611,19 @@
   import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
   const firebaseConfig = {
-    // your existing config stays the same
+    // your existing config values stay the same
   };
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
   const auth = getAuth(app);
+  
   window.db = db;
   window.auth = auth;
-  window.signInWithEmailAndPassword = signInWithEmailAndPassword;
-  window.signOut = signOut;
-  window.onAuthStateChanged = onAuthStateChanged;
+  window.firebaseSignIn = (email, password) => signInWithEmailAndPassword(auth, email, password);
+  window.firebaseSignOut = () => signOut(auth);
+  window.firebaseOnAuthStateChanged = (callback) => onAuthStateChanged(auth, callback);
+  
   console.log("Firebase connected successfully");
 </script>
 

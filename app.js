@@ -10,7 +10,7 @@ async function adminLogin() {
   const email = document.getElementById('adminEmail').value;
   const password = document.getElementById('adminPassword').value;
   try {
-    await window.signInWithEmailAndPassword(window.auth, email, password);
+    await window.firebaseSignIn(email, password);
     document.getElementById('adminLoginForm').style.display = 'none';
     document.getElementById('adminEmail').value = '';
     document.getElementById('adminPassword').value = '';
@@ -20,12 +20,11 @@ async function adminLogin() {
 }
 
 async function adminLogout() {
-  await window.signOut(window.auth);
+  await window.firebaseSignOut();
 }
 
-// Watch for auth state changes
 function initAuth() {
-  window.onAuthStateChanged(window.auth, (user) => {
+  window.firebaseOnAuthStateChanged((user) => {
     const status = document.getElementById('adminStatus');
     const loginBtn = document.getElementById('adminLoginBtn');
     const logoutBtn = document.getElementById('adminLogoutBtn');
