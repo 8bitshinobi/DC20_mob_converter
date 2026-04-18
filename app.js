@@ -505,54 +505,12 @@ function applyDifficultyModifier() {
 }
 // --- SAVE/LOAD/LIBRARY FUNCTIONS ---
 
-// Save Monster to Library
-async function saveMonster() {
-  if (!currentMonster) {
-    alert("Please convert a monster first.");
-    return;
-  }
-
-  try {
-    const { collection, query, where, getDocs, addDoc, updateDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-    const monstersRef = collection(window.db, "monsters");
-
-    // Check for existing entry
-    const q = query(monstersRef, 
-      where("name", "==", currentMonster.name.toLowerCase().trim()),
-      where("cr", "==", currentMonster.cr)
-    );
-    const snapshot = await getDocs(q);
-
-    if (!snapshot.empty) {
-      if (confirm(`"${currentMonster.name}" (CR ${currentMonster.cr}) exists. Update?`)) {
-        const docRef = snapshot.docs[0].ref;
-        await updateDoc(docRef, currentMonster);
-        alert("Updated!");
-      } else {
-        return;
-      }
-    } else {
-      await addDoc(monstersRef, currentMonster);
-      alert("Saved!");
-    }
-
-    loadSavedMonsters();
-    switchTab('library');
-
-  } catch (e) {
-    console.error("Save Error:", e);
-    alert("Error saving: " + e.message);
-  }
-}
-
-// Load Saved Monsters List
 async function loadSavedMonsters() {
   const list = document.getElementById("savedList");
   list.innerHTML = "<li>Loading...</li>";
 
   try {
-    const { collection, getDocs } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-    const snapshot = await getDocs(collection(window.db, "monsters"));
+    const snapshot = await window.db.collection("monsters").get();
 
     if (snapshot.empty) {
       list.innerHTML = "<li>No monsters saved yet.</li>";
@@ -579,6 +537,54 @@ async function loadSavedMonsters() {
   } catch (e) {
     console.error("Load Error:", e);
     list.innerHTML = "<li>Error loading monsters. Check console.</li>";
+  }
+}
+
+async function saveMonster() {
+  if (!currentMonster) {
+    alert("Please convert a monster first.");
+    return;
+  }
+
+  try {
+    const monstersRef = window.db.collection("monsters");
+
+    // Check for existing entry
+    const snapshot = await monstersRef
+      .where("name", "==", currentMonster.name.toLowerCase().trim())
+      .where("cr", "==", currentMonster.cr)
+      .get();
+
+    if (!snapshot.empty) {
+      if (confirm(`"${currentMonster.name}" (CR ${currentMonster.cr}) exists. Update?`)) {
+        await snapshot.docs[0].ref.update(currentMonster);
+        alert("Updated!");
+      } else {
+        return;
+      }
+    } else {
+      await monstersRef.add(currentMonster);
+      alert("Saved!");
+    }
+
+    loadSavedMonsters();
+    switchTab('library');
+
+  } catch (e) {
+    console.error("Save Error:", e);
+    alert("Error saving: " + e.message);
+  }
+}
+
+async function deleteMonster(id) {
+  if (!confirm("Delete this monster?")) return;
+
+  try {
+    await window.db.collection("monsters").doc(id).delete();
+    loadSavedMonsters();
+  } catch (e) {
+    console.error("Delete Error:", e);
+    alert("Error deleting: " + e.message);
   }
 }
 
@@ -665,20 +671,6 @@ function loadMonster(m) {
 
   document.getElementById("resultArea").style.display = "block";
   switchTab('converter');
-}
-
-// Delete Monster
-async function deleteMonster(id) {
-  if (!confirm("Delete this monster?")) return;
-
-  try {
-    const { doc, deleteDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-    await deleteDoc(doc(window.db, "monsters", id));
-    loadSavedMonsters();
-  } catch (e) {
-    console.error("Delete Error:", e);
-    alert("Error deleting: " + e.message);
-  }
 }
 
 // Copy Stats to Clipboard
