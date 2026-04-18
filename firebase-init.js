@@ -7,8 +7,13 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-export const db = getFirestore(app);
-export const auth = getAuth(app);
-export { signInWithEmailAndPassword, signOut, onAuthStateChanged };
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+window.db = db;
+window.auth = auth;
+window.firebaseSignIn = (email, password) => signInWithEmailAndPassword(auth, email, password);
+window.firebaseSignOut = () => signOut(auth);
+window.firebaseOnAuthStateChanged = (callback) => onAuthStateChanged(auth, callback);
 
 console.log("Firebase connected successfully");
