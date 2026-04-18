@@ -12,6 +12,25 @@
 <body>
 
 <div class="container">
+    <div id="adminBar" style="text-align: right; margin-bottom: 10px; font-size: 13px;">
+  <span id="adminStatus" style="color: #666; margin-right: 10px;"></span>
+  <button id="adminLoginBtn" onclick="showAdminLogin()" class="secondary" style="padding: 5px 10px; font-size: 12px;">Admin Login</button>
+  <button id="adminLogoutBtn" onclick="adminLogout()" class="secondary" style="padding: 5px 10px; font-size: 12px; display:none;">Logout</button>
+</div>
+
+<div id="adminLoginForm" style="display:none; background:#f8f9fa; border:1px solid #ddd; border-radius:4px; padding:15px; margin-bottom:15px;">
+  <h4>Admin Login</h4>
+  <div class="form-group">
+    <label for="adminEmail">Email</label>
+    <input type="email" id="adminEmail">
+  </div>
+  <div class="form-group">
+    <label for="adminPassword">Password</label>
+    <input type="password" id="adminPassword">
+  </div>
+  <button onclick="adminLogin()">Login</button>
+  <button onclick="document.getElementById('adminLoginForm').style.display='none'" class="secondary">Cancel</button>
+</div>
     <h1>🐉 D&D 5e to DC20 Converter</h1>
     
     <div class="tabs">
@@ -586,22 +605,23 @@
 </div>
 
 <!-- Link to the JavaScript file -->
- <script type="module">
+<script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
   const firebaseConfig = {
-    apiKey: "YOUR_AIzaSyCTpuTyKuUQm04-Ny7FAIhMADf0FtrIp6U",
-    authDomain: "dc20-converter.firebaseapp.com",
-    projectId: "dc20-converter",
-    storageBucket: "dc20-converter.firebasestorage.app",
-    messagingSenderId: "632779141752",
-    appId: "1:632779141752:web:42211e89414d341a7cb38d"
+    // your existing config stays the same
   };
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
+  const auth = getAuth(app);
   window.db = db;
+  window.auth = auth;
+  window.signInWithEmailAndPassword = signInWithEmailAndPassword;
+  window.signOut = signOut;
+  window.onAuthStateChanged = onAuthStateChanged;
   console.log("Firebase connected successfully");
 </script>
 

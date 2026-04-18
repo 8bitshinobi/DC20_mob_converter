@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dc20-cache-v4';
+const CACHE_NAME = 'dc20-cache-v5';
 const FILES_TO_CACHE = [
   '/DC20_mob_converter/',
   '/DC20_mob_converter/index.html',

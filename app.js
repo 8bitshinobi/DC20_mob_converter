@@ -2,6 +2,46 @@ let currentMonster = null;
 let currentLevel = "";
 // --- SETTINGS HELPER FUNCTIONS ---
 
+function showAdminLogin() {
+  document.getElementById('adminLoginForm').style.display = 'block';
+}
+
+async function adminLogin() {
+  const email = document.getElementById('adminEmail').value;
+  const password = document.getElementById('adminPassword').value;
+  try {
+    await window.signInWithEmailAndPassword(window.auth, email, password);
+    document.getElementById('adminLoginForm').style.display = 'none';
+    document.getElementById('adminEmail').value = '';
+    document.getElementById('adminPassword').value = '';
+  } catch (e) {
+    alert('Login failed: ' + e.message);
+  }
+}
+
+async function adminLogout() {
+  await window.signOut(window.auth);
+}
+
+// Watch for auth state changes
+function initAuth() {
+  window.onAuthStateChanged(window.auth, (user) => {
+    const status = document.getElementById('adminStatus');
+    const loginBtn = document.getElementById('adminLoginBtn');
+    const logoutBtn = document.getElementById('adminLogoutBtn');
+    if (user) {
+      status.innerText = 'Logged in as Admin';
+      status.style.color = '#27ae60';
+      loginBtn.style.display = 'none';
+      logoutBtn.style.display = 'inline-block';
+    } else {
+      status.innerText = '';
+      loginBtn.style.display = 'inline-block';
+      logoutBtn.style.display = 'none';
+    }
+  });
+}
+
 function calcBonus(scoreId, bonusId) {
     const score = parseInt(document.getElementById(scoreId).value);
     const bonusField = document.getElementById(bonusId);
@@ -1686,5 +1726,6 @@ window.onload = function() {
   renderBaseStatsEditor();
   renderModifiersEditor();
   switchTab('converter');
+  initAuth();
   console.log("App loaded successfully");
 };
