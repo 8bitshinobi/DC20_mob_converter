@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dc20-cache-v6';
+const CACHE_NAME = 'dc20-cache-v7';
 const FILES_TO_CACHE = [
   '/DC20_mob_converter/',
   '/DC20_mob_converter/index.html',
@@ -6,6 +6,7 @@ const FILES_TO_CACHE = [
   '/DC20_mob_converter/app.js',
   '/DC20_mob_converter/data.js',
   '/DC20_mob_converter/manifest.json'
+  '/DC20_mob_converter/firebase-init.js'
 ];
 
 self.addEventListener('install', event => {

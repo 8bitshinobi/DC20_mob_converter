@@ -1,6 +1,7 @@
 let currentMonster = null;
 let currentLevel = "";
 // --- SETTINGS HELPER FUNCTIONS ---
+import { db, auth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from './firebase-init.js';
 
 function showAdminLogin() {
   document.getElementById('adminLoginForm').style.display = 'block';
